@@ -1,0 +1,154 @@
+DUAL LICENSE: MIT + Palimpsest v0.8
+
+This software is dual-licensed under the MIT License and the Palimpsest License v0.8.
+You may use, copy, modify, and distribute this software under the terms of EITHER license.
+
+===============================================================================
+MIT LICENSE
+===============================================================================
+
+Copyright (c) 2025 GrimRepo Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+===============================================================================
+PALIMPSEST LICENSE v0.8
+===============================================================================
+
+The Palimpsest License
+Version 0.8, January 2025
+
+Copyright (c) 2025 GrimRepo Contributors
+
+PREAMBLE
+
+The Palimpsest License recognizes that software development involves not just
+code, but human relationships, emotional labor, and community safety. This
+license extends traditional open source permissions with explicit guarantees
+around emotional safety, reversibility, and community health.
+
+TERMS AND CONDITIONS
+
+1. GRANT OF RIGHTS
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation (the "Work"), to use,
+   copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+   of the Work, subject to the following conditions:
+
+2. ATTRIBUTION
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Work.
+
+3. EMOTIONAL SAFETY GUARANTEES
+
+   3.1 RIGHT TO REVERSIBILITY
+       All contributors retain the right to experiment without permanent
+       consequences. Failed experiments, abandoned features, and reverted
+       changes shall not be held against contributors in any way.
+
+   3.2 ANTI-HARASSMENT PROTECTION
+       No person shall use this Work as a vector for harassment, doxxing,
+       emotional manipulation, or coordinated attacks against contributors
+       or users.
+
+   3.3 ANXIETY REDUCTION
+       Documentation and contribution processes shall prioritize clarity and
+       psychological safety. Confusing or anxiety-inducing patterns should
+       be treated as bugs.
+
+4. COMMUNITY HEALTH
+
+   4.1 CONSTRUCTIVE CRITIQUE
+       Code review and technical critique must focus on the work, not the
+       person. Personal attacks, dismissiveness, and condescension are
+       prohibited.
+
+   4.2 INCLUSIVE PARTICIPATION
+       The Work shall remain accessible to people of varying skill levels,
+       backgrounds, and neurotypes. Gatekeeping is prohibited.
+
+   4.3 SUSTAINABLE MAINTENANCE
+       Maintainers have the right to sustainable work practices, including
+       the right to step back, delegate, or hand off maintenance without
+       guilt or pressure.
+
+5. TRANSPARENT GOVERNANCE
+
+   5.1 DECISION VISIBILITY
+       Significant project decisions should be documented and visible.
+       Backroom deals and clique-based governance are discouraged.
+
+   5.2 CONTRIBUTOR VOICE
+       Regular contributors should have meaningful input into project
+       direction, proportional to their sustained engagement.
+
+6. NO WARRANTY
+
+   THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+7. LIMITATION OF LIABILITY
+
+   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE WORK
+   OR THE USE OR OTHER DEALINGS IN THE WORK.
+
+8. ENFORCEMENT
+
+   Violations of the emotional safety and community health provisions may
+   result in:
+   - Temporary or permanent ban from project spaces
+   - Revocation of commit access
+   - Public documentation of violations (with consent of affected parties)
+
+   Enforcement decisions should be made transparently by maintainers in
+   consultation with affected community members.
+
+9. COMPATIBILITY
+
+   This license is compatible with the MIT License, Apache 2.0, and other
+   permissive open source licenses. The additional provisions apply only
+   to community interaction, not to code usage rights.
+
+10. TERMINATION
+
+    This license is perpetual unless explicitly terminated by copyright
+    holders. Individual violators of community health provisions may have
+    their participation rights terminated while the license remains in
+    effect for other users.
+
+END OF TERMS AND CONDITIONS
+
+===============================================================================
+
+HOW TO APPLY THESE LICENSES TO YOUR WORK
+
+Include this LICENSE.txt file in your distribution and add the following
+notice to your source files:
+
+    SPDX-License-Identifier: MIT AND Palimpsest-0.8
+
+    This file is dual-licensed under the MIT License and Palimpsest License v0.8.
+    See LICENSE.txt for complete terms.
+
+===============================================================================

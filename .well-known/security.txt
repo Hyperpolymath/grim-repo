@@ -1,0 +1,44 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+# security.txt - RFC 9116 Compliant Security Contact Information
+# https://securitytxt.org/
+
+# Primary Security Contact
+Contact: mailto:security@grimrepo.dev
+Contact: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts/-/issues/new?issuable_template=security
+
+# Preferred Languages
+Preferred-Languages: en
+
+# Canonical URL
+Canonical: https://grimrepo.dev/.well-known/security.txt
+
+# Expires (1 year from last update)
+Expires: 2026-01-22T00:00:00.000Z
+
+# Encryption (PGP key for encrypted communications)
+Encryption: https://grimrepo.dev/.well-known/pgp-key.txt
+
+# Acknowledgments
+Acknowledgments: https://grimrepo.dev/security-hall-of-fame
+Acknowledgments: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts/-/blob/main/SECURITY.md#security-hall-of-fame
+
+# Policy
+Policy: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts/-/blob/main/SECURITY.md
+
+# Hiring (optional - not currently hiring)
+# Hiring: https://grimrepo.dev/careers
+
+# Additional Information
+# We follow a coordinated disclosure policy (90-day maximum)
+# We aim to acknowledge reports within 48 hours
+# We credit security researchers in our advisories (opt-in)
+# We do not pursue legal action against good-faith security researchers
+
+-----BEGIN PGP SIGNATURE-----
+Comment: This signature verifies the authenticity of this security.txt file
+Comment: PGP key available at https://grimrepo.dev/.well-known/pgp-key.txt
+
+[PGP signature to be added when signing keys are established]
+-----END PGP SIGNATURE-----
