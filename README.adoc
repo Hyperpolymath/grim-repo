@@ -1,18 +1,18 @@
-# GrimRepo Scripts
+= GrimRepo Scripts
 
-**Modular audit-grade tooling for narratable, scaffolded, and legible repositories**
+*Modular audit-grade tooling for narratable, scaffolded, and legible repositories*
 
 [![RSR Compliant](https://img.shields.io/badge/RSR-Bronze-cd7f32)](https://rhodium-standard.org)
 [![License](https://img.shields.io/badge/license-MIT%20%2B%20Palimpsest%20v0.8-blue.svg)](LICENSE.txt)
 [![TPCF](https://img.shields.io/badge/TPCF-Perimeter%203-green)](CONTRIBUTING.md)
 
-## Overview
+== Overview
 
-GrimRepo is a modular toolkit for elevating repositories to professional standards across GitLab, GitHub, and Bitbucket. The project embodies the principle that **repositories should be narratable, audit-grade, and emotionally legible**.
+GrimRepo is a modular toolkit for elevating repositories to professional standards across GitLab, GitHub, and Bitbucket. The project embodies the principle that *repositories should be narratable, audit-grade, and emotionally legible*.
 
-## Core Modules
+== Core Modules
 
-### 1. Repo Structure Bootstrapper
+=== 1. Repo Structure Bootstrapper
 Ensures essential directories exist with proper scaffolding:
 - Source code directories (`src/`, `lib/`)
 - Test directories (`tests/`, `spec/`)
@@ -20,7 +20,7 @@ Ensures essential directories exist with proper scaffolding:
 - Community standards (`.github/`, `.gitlab/`)
 - Build and CI/CD infrastructure
 
-### 2. Community Standards Helper
+=== 2. Community Standards Helper
 Audits and assists with:
 - LICENSE compliance
 - CONTRIBUTING.md guidelines
@@ -28,7 +28,7 @@ Audits and assists with:
 - SECURITY.md policies
 - MAINTAINERS.md documentation
 
-### 3. Golden Registry Auditor
+=== 3. Golden Registry Auditor
 Runs diagnostic checks for:
 - Documentation completeness
 - Build system presence
@@ -36,43 +36,43 @@ Runs diagnostic checks for:
 - Security configurations
 - Dependency analysis
 
-## Philosophy
+== Philosophy
 
-GrimRepo operates on a **progression model**:
+GrimRepo operates on a *progression model*:
 
-1. **Raw Project** → Initial state
-2. **Golden Repo** → Passes core audits
-3. **Rhodium Register** → Exceptionally clear, narratable projects
+1. *Raw Project* → Initial state
+2. *Golden Repo* → Passes core audits
+3. *Rhodium Register* → Exceptionally clear, narratable projects
 
-Structure is not just organization — it's about **clarity, onboarding, and symbolic trust**.
+Structure is not just organization — it's about *clarity, onboarding, and symbolic trust*.
 
-## Installation
+== Installation
 
-### Prerequisites
+=== Prerequisites
 - ReScript compiler (`npm install -g rescript`)
 - Git
 - just (task runner)
 - (Optional) Nix with flakes enabled for reproducible builds
 
-### Quick Start
+=== Quick Start
 
 ```bash
-# Clone the repository
+= Clone the repository
 git clone https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts.git
 cd grimrepo-scripts
 
-# Build ReScript to JavaScript
+= Build ReScript to JavaScript
 just build
 
-# Or use Nix
+= Or use Nix
 nix develop
 just build
 
-# Validate RSR compliance
+= Validate RSR compliance
 just verify-rsr
 ```
 
-### As Userscript
+=== As Userscript
 
 Install via [GreasyFork](https://greasyfork.org) (coming soon) or manually:
 
@@ -81,39 +81,39 @@ Install via [GreasyFork](https://greasyfork.org) (coming soon) or manually:
 3. Visit any GitLab/GitHub/Bitbucket repository
 4. Access GrimRepo tools via the injected UI
 
-## Features
+== Features
 
-### Offline-First Architecture
-- **Zero external dependencies** at runtime
-- **No network calls** required for core functionality
-- **Air-gapped compatible** for secure environments
+=== Offline-First Architecture
+- *Zero external dependencies* at runtime
+- *No network calls* required for core functionality
+- *Air-gapped compatible* for secure environments
 
-### Type Safety
-- **ReScript implementation** with sound type system
-- **Compile-time guarantees** - no runtime type errors
-- **Pattern matching exhaustiveness** checked at compile-time
+=== Type Safety
+- *ReScript implementation* with sound type system
+- *Compile-time guarantees* - no runtime type errors
+- *Pattern matching exhaustiveness* checked at compile-time
 
-### Memory Safety
-- **No buffer overflows** - immutable data structures
-- **No null pointer exceptions** - explicit null handling
-- **Predictable resource cleanup** - proper disposal patterns
+=== Memory Safety
+- *No buffer overflows* - immutable data structures
+- *No null pointer exceptions* - explicit null handling
+- *Predictable resource cleanup* - proper disposal patterns
 
-## RSR Compliance
+== RSR Compliance
 
-This project achieves **Bronze-level** Rhodium Standard Repository compliance:
+This project achieves *Bronze-level* Rhodium Standard Repository compliance:
 
-- ✅ **616 lines of ReScript code** (515% over 100-line minimum!) with zero runtime dependencies
-- ✅ **Type safety** via ReScript's sound type system
-- ✅ **Memory safety** through immutable-by-default functional programming
-- ✅ **Offline-first** - no network dependencies
-- ✅ **Complete documentation** (README, LICENSE, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT)
-- ✅ **.well-known/** directory (security.txt, ai.txt, humans.txt)
-- ✅ **Build system** (ReScript compiler, justfile, Nix flake)
-- ✅ **CI/CD pipeline** (.gitlab-ci.yml with ReScript builds)
-- ✅ **WASM-ready** architecture for performance
-- ✅ **TPCF Perimeter 3** - Community Sandbox (open contribution)
+- ✅ *616 lines of ReScript code* (515% over 100-line minimum!) with zero runtime dependencies
+- ✅ *Type safety* via ReScript's sound type system
+- ✅ *Memory safety* through immutable-by-default functional programming
+- ✅ *Offline-first* - no network dependencies
+- ✅ *Complete documentation* (README, LICENSE, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT)
+- ✅ *.well-known/* directory (security.txt, ai.txt, humans.txt)
+- ✅ *Build system* (ReScript compiler, justfile, Nix flake)
+- ✅ *CI/CD pipeline* (.gitlab-ci.yml with ReScript builds)
+- ✅ *WASM-ready* architecture for performance
+- ✅ *TPCF Perimeter 3* - Community Sandbox (open contribution)
 
-## Project Structure
+== Project Structure
 
 ```
 grimrepo-scripts/
@@ -145,76 +145,76 @@ grimrepo-scripts/
 └── README.md                # This file
 ```
 
-## Development
+== Development
 
 ```bash
-# Build ReScript
+= Build ReScript
 just build
 
-# Watch mode for development
+= Watch mode for development
 just watch-rescript
 
-# Format code
+= Format code
 just format
 
-# Verify RSR compliance
+= Verify RSR compliance
 just verify-rsr
 
-# Count lines of code
+= Count lines of code
 just loc
 
-# Show project statistics
+= Show project statistics
 just stats
 
-# Clean build artifacts
+= Clean build artifacts
 just clean
 ```
 
-## Using Just
+== Using Just
 
 We use [just](https://github.com/casey/just) for task automation:
 
 ```bash
-# Show all available recipes
+= Show all available recipes
 just --list
 
-# Build the project (ReScript to JavaScript)
+= Build the project (ReScript to JavaScript)
 just build
 
-# Development mode with watch
+= Development mode with watch
 just watch-rescript
 
-# Verify RSR Bronze compliance
+= Verify RSR Bronze compliance
 just verify-rsr
 
-# Clean build artifacts
+= Clean build artifacts
 just clean
 ```
 
-## Using Nix
+== Using Nix
 
 Reproducible builds with Nix:
 
 ```bash
-# Enter development shell
+= Enter development shell
 nix develop
 
-# Build the project
+= Build the project
 nix build
 
-# Run checks
+= Run checks
 nix flake check
 ```
 
-## Contributing
+== Contributing
 
-We welcome contributions! This project follows the **Tri-Perimeter Contribution Framework (TPCF)**:
+We welcome contributions! This project follows the *Tri-Perimeter Contribution Framework (TPCF)*:
 
-- **Perimeter 3 (Community Sandbox)**: Open to all contributors
+- *Perimeter 3 (Community Sandbox)*: Open to all contributors
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines
 - Review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participating
 
-## Security
+== Security
 
 Security is paramount. Please see [SECURITY.md](SECURITY.md) for:
 - Reporting vulnerabilities
@@ -222,19 +222,19 @@ Security is paramount. Please see [SECURITY.md](SECURITY.md) for:
 - Supported versions
 - Contact information (also in `.well-known/security.txt`)
 
-## License
+== License
 
 Dual-licensed under:
-- **MIT License** (permissive open source)
-- **Palimpsest License v0.8** (emotional safety guarantees)
+- *MIT License* (permissive open source)
+- *Palimpsest License v0.8* (emotional safety guarantees)
 
 See [LICENSE.txt](LICENSE.txt) for complete terms.
 
-## Maintainers
+== Maintainers
 
 See [MAINTAINERS.md](MAINTAINERS.md) for current project maintainers and governance structure.
 
-## Roadmap
+== Roadmap
 
 - [ ] Browser extension version (Firefox, Chrome)
 - [ ] GitHub Action integration
@@ -244,18 +244,18 @@ See [MAINTAINERS.md](MAINTAINERS.md) for current project maintainers and governa
 - [ ] VS Code extension
 - [ ] CLI standalone tool
 
-## Acknowledgments
+== Acknowledgments
 
 See [.well-known/humans.txt](.well-known/humans.txt) for complete attribution.
 
-## Links
+== Links
 
-- **GitLab**: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts
-- **Documentation**: https://grimrepo.dev (coming soon)
-- **Issue Tracker**: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts/-/issues
-- **Rhodium Standard**: https://rhodium-standard.org
-- **Palimpsest License**: https://palimpsest.dev
+- *GitLab*: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts
+- *Documentation*: https://grimrepo.dev (coming soon)
+- *Issue Tracker*: https://gitlab.com/extensions-library/monkey-scripts/grimrepo-scripts/-/issues
+- *Rhodium Standard*: https://rhodium-standard.org
+- *Palimpsest License*: https://palimpsest.dev
 
 ---
 
-**Built with rhodium-standard clarity. Emotionally legible by design.**
+*Built with rhodium-standard clarity. Emotionally legible by design.*
