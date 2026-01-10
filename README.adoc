@@ -228,7 +228,7 @@ Security is paramount. Please see [SECURITY.md](SECURITY.md) for:
 == License
 
 Dual-licensed under:
-- *MIT License* (permissive open source)
+- *Palimpsest-MPL-1.0 License* (permissive open source)
 - *Palimpsest License v0.8* (emotional safety guarantees)
 
 See [LICENSE.txt](LICENSE.txt) for complete terms.
