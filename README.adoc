@@ -1,6 +1,9 @@
 = GrimRepo Scripts
+image:https://img.shields.io/badge/license-PMPL--1.0-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
+
+
+
 image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 
 
@@ -139,7 +142,7 @@ grimrepo-scripts/
 ├── justfile                 # Build automation (ReScript tasks)
 ├── flake.nix                # Nix reproducible builds
 ├── bsconfig.json            # ReScript configuration
-├── LICENSE.txt              # Dual MIT + Palimpsest v0.8
+├── LICENSE.txt              # Dual PMPL-1.0 + Palimpsest v0.8
 ├── SECURITY.md              # Security policies
 ├── CONTRIBUTING.md          # Contribution guidelines
 ├── CODE_OF_CONDUCT.md      # Community conduct
@@ -228,7 +231,7 @@ Security is paramount. Please see [SECURITY.md](SECURITY.md) for:
 == License
 
 Dual-licensed under:
-- *MIT License* (permissive open source)
+- *Palimpsest-MPL License v1.0 (PMPL-1.0)* (permissive open source)
 - *Palimpsest License v0.8* (emotional safety guarantees)
 
 See [LICENSE.txt](LICENSE.txt) for complete terms.
