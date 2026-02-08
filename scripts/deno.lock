@@ -1,0 +1,19 @@
+{
+  "version": "5",
+  "specifiers": {
+    "npm:rescript@*": "11.1.4",
+    "npm:rescript@11": "11.1.4"
+  },
+  "npm": {
+    "rescript@11.1.4": {
+      "integrity": "sha512-0bGU0bocihjSC6MsE3TMjHjY0EUpchyrREquLS8VsZ3ohSMD+VHUEwimEfB3kpBI1vYkw3UFZ3WD8R28guz/Vw==",
+      "scripts": true,
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:rescript@11"
+    ]
+  }
+}

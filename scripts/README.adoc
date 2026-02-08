@@ -1,0 +1,229 @@
+= grimrepo-scripts
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Contents
+:sectnums:
+:source-highlighter: highlight.js
+
+image:https://img.shields.io/badge/ReScript-11-red.svg[ReScript 11]
+image:https://img.shields.io/badge/Deno-2.x-blue.svg[Deno 2.x]
+image:https://img.shields.io/badge/RSR-Compliant-gold.svg[RSR Compliant]
+
+**ReScript-first userscripts for browser automation with MAAF integration.**
+
+== Overview
+
+grimrepo-scripts provides a collection of browser userscripts built with ReScript for type safety and MAAF (Manifest-Aware Automation Framework) integration.
+
+=== Available Scripts
+
+[cols="1,3"]
+|===
+|Script |Description
+
+|**GrimCore**
+|Core module with shared utilities for all scripts
+
+|**Repository Control Suite** (v1.0.0)
+|
+
+|**GrimGreaser**
+|Pure ReScript build system with GreasyFork auto-publish
+
+|**GrimPager**
+|Perpetual auto-paging engine with smart detection
+
+|**GrimTemplateEngine**
+|Intelligent repository health agent with context-aware templates
+
+|**GrimLicenseChecker**
+|License compliance validator with SPDX header detection
+
+|**GrimCIValidator**
+|GitHub Actions workflow quality checker
+
+|**GrimSecurityScanner**
+|Security vulnerability detector for repositories
+
+|**Platform Integrations**
+|
+
+|**AibdpChecker**
+|AIBDP manifest detection and display
+
+|**GitlabEnhanced**
+|RSR-focused GitLab enhancements
+
+|**Accessibility & Themes**
+|
+
+|**A11yOverlay**
+|Accessibility testing overlay
+
+|**DarkMode**
+|Universal dark mode with sinople color schemes
+
+|===
+
+=== Planned Scripts
+
+* `CitationExtractor` - Extract citations from web pages
+* `DoiResolver` - Quick DOI resolution
+* `StateViewer` - Pretty-print STATE.scm files
+* `NickelPreview` - Preview Nickel configs in browser
+* `Readability` - WASM-powered readability mode
+
+== Installation
+
+=== Prerequisites
+
+* https://deno.com[Deno] 2.x or later
+* https://www.tampermonkey.net/[Tampermonkey] or compatible userscript manager
+
+=== Build from Source
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/grimrepo-scripts.git
+cd grimrepo-scripts
+
+# Build with Deno
+deno task build
+
+# Or use just
+just build
+----
+
+=== Install Userscripts
+
+After building, install scripts from the `dist/` directory:
+
+[source,bash]
+----
+# List built scripts
+ls dist/*.user.js
+
+# Install to Tampermonkey (macOS)
+just install-tm
+
+# Or open manually in your userscript manager
+----
+
+== Development
+
+=== Commands
+
+[source,bash]
+----
+# Using Deno tasks (recommended)
+deno task build    # Compile ReScript
+deno task dev      # Watch mode
+deno task fmt      # Format ReScript files
+deno task check    # Type check
+
+# Using just
+just build         # Full build (ReScript + bundle)
+just dev           # Watch mode
+just clean         # Remove build artifacts
+just list          # Show available scripts
+----
+
+=== Project Structure
+
+[source]
+----
+grimrepo-scripts/
+├── src/
+│   ├── core/
+│   │   └── GrimCore.res      # Shared utilities
+│   └── scripts/
+│       ├── aibdp/
+│       │   └── AibdpChecker.res
+│       ├── code/
+│       │   └── GitlabEnhanced.res
+│       ├── a11y/
+│       │   └── A11yOverlay.res
+│       └── content/
+│           └── DarkMode.res
+├── dist/                      # Built userscripts
+├── deno.json                  # Deno configuration
+├── rescript.json              # ReScript compiler config
+├── justfile                   # Task runner
+└── STATE.scm                  # Project state
+----
+
+=== ReScript Development
+
+[source,rescript]
+----
+// src/scripts/example/MyScript.res
+open GrimCore
+
+let main = () => {
+  log("MyScript loaded")
+
+  // Use Greasemonkey APIs
+  GM.getValue("setting", "default")
+  ->Promise.then(value => {
+    log(`Setting: ${value}`)
+    Promise.resolve()
+  })
+  ->ignore
+}
+
+let () = main()
+----
+
+== Integration
+
+=== AIBDP (AI Bot Declaration Protocol)
+
+grimrepo-scripts includes the AibdpChecker script for detecting `.well-known/aibdp.json` manifests on websites:
+
+[source,bash]
+----
+# Check AIBDP compliance
+just check-aibdp
+----
+
+=== RSR Ecosystem
+
+Part of the RSR (Rhodium Standard Repository) framework:
+
+* Integrates with https://github.com/hyperpolymath/sinople-theme[sinople-theme] for dark mode
+* Follows https://github.com/hyperpolymath/consent-aware-http[consent-aware-http] patterns
+* Compatible with https://github.com/hyperpolymath/rhodium-standard-repositories[RSR guidelines]
+
+== WASM Support
+
+For performance-critical features, grimrepo-scripts supports WASM modules:
+
+[source,bash]
+----
+# Build WASM modules (requires Rust)
+just build-wasm
+----
+
+== License
+
+PMPL-1.0-or-later OR Palimpsest-0.5 (dual licensed)
+
+See link:LICENSE.txt[LICENSE.txt] for details.
+
+== Contributing
+
+Contributions welcome! Please read link:CONTRIBUTING.md[CONTRIBUTING.md] first.
+
+== Related Projects
+
+* https://github.com/hyperpolymath/sinople-theme[sinople-theme] - RSR color schemes
+* https://github.com/hyperpolymath/aibdp-spec[aibdp-spec] - AIBDP specification
+* https://github.com/hyperpolymath/maaf[maaf] - Manifest-Aware Automation Framework

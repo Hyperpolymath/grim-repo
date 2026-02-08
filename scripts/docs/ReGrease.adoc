@@ -1,0 +1,349 @@
+= ReGrease: Pure ReScript UserScript Build System
+:toc:
+:toc-title: Contents
+
+== Overview
+
+**ReGrease** is a meta-circular build system for UserScripts, written entirely in ReScript. It eliminates the need for TypeScript build scripts by using ReScript to build ReScript.
+
+=== Key Principles
+
+1. **Single Source of Truth**: All metadata lives in `deno.json`
+2. **Meta-Circular**: ReScript compiles itself, then runs its own build logic
+3. **Type-Safe Builds**: Build scripts get the same type safety as application code
+4. **Zero Runtime Dependencies**: Compiles to standalone `.user.js` files
+
+== Architecture
+
+=== The Build Flow
+
+[source]
+----
+1. `deno task build`
+   ↓
+2. ReScript compiler processes:
+   - src/Main.res → src/Main.bs.js (your UserScript)
+   - src/Build.res → src/Build.bs.js (build automation)
+   ↓
+3. Deno executes src/Build.bs.js
+   ↓
+4. Build.bs.js:
+   - Reads deno.json (Single Source of Truth)
+   - Generates UserScript header
+   - Bundles Main.bs.js with esbuild
+   - Outputs dist/script.user.js
+----
+
+=== File Structure
+
+[source]
+----
+project/
+├── deno.json              # Metaiconic config (SSOT)
+├── rescript.json          # ReScript compiler config
+├── src/
+│   ├── Main.res          # Your UserScript logic
+│   └── Build.res         # Build automation (ReScript!)
+└── dist/
+    └── script.user.js    # Final bundled output
+----
+
+== Usage
+
+=== Step 1: Configure deno.json
+
+The **Single Source of Truth** for all metadata:
+
+[source,json]
+----
+{
+  "name": "my-awesome-script",
+  "version": "1.0.0",
+  "license": "PMPL-1.0-or-later",
+  "tasks": {
+    "build": "rescript build -with-deps && deno run --allow-read --allow-write --allow-env --allow-run src/Build.bs.js"
+  },
+  "userScript": {
+    "namespace": "https://github.com/yourname",
+    "description": "Does amazing things",
+    "match": ["*://example.com/*"],
+    "grant": ["GM.setValue", "GM.getValue"],
+    "runAt": "document-start"
+  },
+  "imports": {
+    "esbuild": "npm:esbuild@0.19.11"
+  }
+}
+----
+
+=== Step 2: Write Your Script (src/Main.res)
+
+[source,rescript]
+----
+// src/Main.res
+
+// Version injected at build time from deno.json
+@val external version: string = "METADATA_VERSION"
+@val external name: string = "METADATA_NAME"
+
+let main = () => {
+  Js.Console.log(`${name} v${version} loaded!`)
+
+  // Your UserScript logic here
+  GM.getValue("setting", "default")
+  ->Promise.then(value => {
+    Js.Console.log(`Setting: ${value}`)
+    Promise.resolve()
+  })
+  ->ignore
+}
+
+main()
+----
+
+=== Step 3: Create Build Script (src/Build.res)
+
+[source,rescript]
+----
+// src/Build.res
+open ReGrease
+
+let main = async () => {
+  await buildScript(
+    ~entry="src/Main.bs.js",
+    ~output="dist/MyScript.user.js",
+    ~minify=false,
+  )
+}
+
+main()
+----
+
+=== Step 4: Build
+
+[source,bash]
+----
+# One command builds everything
+deno task build
+
+# Output: dist/MyScript.user.js with proper header
+----
+
+== API Reference
+
+=== `buildScript`
+
+[source,rescript]
+----
+let buildScript: (
+  ~entry: string,
+  ~output: string,
+  ~minify: bool=?,
+) => promise<unit>
+----
+
+**Parameters:**
+
+* `entry`: Path to compiled `.bs.js` file (e.g., `"src/Main.bs.js"`)
+* `output`: Output path for bundled `.user.js` (e.g., `"dist/script.user.js"`)
+* `minify`: Optional minification (default: `false`)
+
+=== Generated Header Format
+
+ReGrease automatically generates Greasemonkey headers from `deno.json`:
+
+[source,javascript]
+----
+// ==UserScript==
+// @name        my-awesome-script
+// @namespace   https://github.com/yourname
+// @version     1.0.0
+// @description Does amazing things
+// @license     PMPL-1.0-or-later
+// @match       *://example.com/*
+// @grant       GM.setValue
+// @grant       GM.getValue
+// @run-at      document-start
+// @noframes
+// ==/UserScript==
+----
+
+== Advantages
+
+=== Over TypeScript Build Scripts
+
+[cols="1,1,1"]
+|===
+|Feature |TypeScript Build |ReGrease
+
+|Type Safety
+|❌ Build scripts not checked
+|✅ Full type checking
+
+|Dependencies
+|❌ @types/* packages
+|✅ ReScript stdlib only
+
+|Compilation
+|❌ Two compilers (tsc + rsc)
+|✅ One compiler (rsc)
+
+|Learning Curve
+|❌ Two languages
+|✅ One language
+|===
+
+=== Meta-Circularity Benefits
+
+1. **Consistency**: Same language for app and build logic
+2. **Refactorability**: Rename types, compiler updates both
+3. **Shared Code**: Utilities work in both contexts
+4. **Single Toolchain**: One compiler, one formatter, one LSP
+
+== Publishing Workflow
+
+=== Version Bump
+
+[source,bash]
+----
+# 1. Edit version in deno.json ONLY
+vim deno.json  # Change "version": "1.0.1"
+
+# 2. Build (auto-generates header with new version)
+deno task build
+
+# 3. Commit & tag
+git add .
+git commit -m "Release v1.0.1"
+git tag v1.0.1
+
+# 4. Upload dist/script.user.js to GreasyFork
+----
+
+== Advanced Usage
+
+=== Custom Header Fields
+
+Extend `deno.json` schema:
+
+[source,json]
+----
+{
+  "userScript": {
+    "namespace": "...",
+    "description": "...",
+    "author": "Your Name",
+    "homepage": "https://github.com/you/repo",
+    "supportURL": "https://github.com/you/repo/issues",
+    "updateURL": "https://example.com/script.meta.js",
+    "match": ["..."],
+    "grant": ["..."],
+    "runAt": "document-start"
+  }
+}
+----
+
+Then update `ReGrease.generateHeader` to include these fields.
+
+=== Multiple Scripts
+
+Build different UserScripts from the same repo:
+
+[source,rescript]
+----
+// src/BuildAll.res
+open ReGrease
+
+let main = async () => {
+  await buildScript(
+    ~entry="src/scripts/ScriptA.bs.js",
+    ~output="dist/ScriptA.user.js",
+  )
+
+  await buildScript(
+    ~entry="src/scripts/ScriptB.bs.js",
+    ~output="dist/ScriptB.user.js",
+  )
+}
+
+main()
+----
+
+=== Production vs Development Builds
+
+[source,json]
+----
+{
+  "tasks": {
+    "build": "rescript && deno run --allow-all src/Build.bs.js",
+    "build:prod": "rescript && deno run --allow-all src/BuildProd.bs.js"
+  }
+}
+----
+
+[source,rescript]
+----
+// src/BuildProd.res
+open ReGrease
+
+let main = async () => {
+  await buildScript(
+    ~entry="src/Main.bs.js",
+    ~output="dist/script.user.js",
+    ~minify=true,  // Minify for production
+  )
+}
+----
+
+== Troubleshooting
+
+=== Build Script Not Found
+
+**Error:** `error: Module not found "file:///path/Build.bs.js"`
+
+**Solution:** Run `rescript build` first, or use the two-step task:
+[source,json]
+----
+{
+  "tasks": {
+    "build": "rescript build -with-deps && deno run ... src/Build.bs.js"
+  }
+}
+----
+
+=== Esbuild Errors
+
+**Error:** `Could not resolve "esbuild"`
+
+**Solution:** Ensure `deno.json` has esbuild import:
+[source,json]
+----
+{
+  "imports": {
+    "esbuild": "npm:esbuild@0.19.11"
+  }
+}
+----
+
+=== Version Not Injected
+
+**Error:** UserScript shows `undefined` for version
+
+**Solution:** Ensure `define` block in ReGrease includes:
+[source,rescript]
+----
+Js.Dict.set(defineDict, "METADATA_VERSION", `"${config.version}"`)
+----
+
+And your script uses:
+[source,rescript]
+----
+@val external version: string = "METADATA_VERSION"
+----
+
+== See Also
+
+* link:../README.adoc[grimrepo-scripts README]
+* https://rescript-lang.org[ReScript Documentation]
+* https://deno.land[Deno Documentation]
+* https://esbuild.github.io[Esbuild Documentation]

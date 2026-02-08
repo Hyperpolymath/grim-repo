@@ -1,0 +1,150 @@
+# grimrepo-scripts Justfile
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Palimpsest-0.5
+#
+# ReScript-first userscripts for browser automation
+
+default: build
+
+# === Build ===
+
+# Build all scripts
+build: build-rescript build-userscripts
+    @echo "✓ Build complete"
+
+# Compile ReScript
+build-rescript:
+    @echo "Compiling ReScript..."
+    deno run -A npm:rescript
+
+# Bundle userscripts
+build-userscripts: build-rescript
+    @echo "Bundling userscripts..."
+    @mkdir -p dist
+    @just _bundle-script "AibdpChecker" "aibdp"
+    @just _bundle-script "GitlabEnhanced" "code"
+    @just _bundle-script "A11yOverlay" "a11y"
+    @just _bundle-script "DarkMode" "content"
+    @echo "✓ Userscripts bundled"
+
+# Internal: bundle single script
+_bundle-script name category:
+    @cat > dist/grim-{{lowercase(name)}}.user.js << 'HEADER'
+    // ==UserScript==
+    // @name         Grim {{name}}
+    // @namespace    https://rhodium.sh/grimrepo
+    // @version      1.0.0
+    // @description  RSR-compliant userscript
+    // @author       Jonathan D.A. Jewell
+    // @match        *://*/*
+    // @grant        GM_getValue
+    // @grant        GM_setValue
+    // @grant        GM_deleteValue
+    // @grant        GM_listValues
+    // @grant        GM_xmlHttpRequest
+    // @grant        GM_addStyle
+    // @grant        GM_registerMenuCommand
+    // @grant        GM_notification
+    // @grant        GM_openInTab
+    // @license      AGPL-3.0-or-later
+    // ==/UserScript==
+    HEADER
+    @echo "" >> dist/grim-{{lowercase(name)}}.user.js
+    @cat src/core/GrimCore.mjs >> dist/grim-{{lowercase(name)}}.user.js
+    @cat src/scripts/{{category}}/{{name}}.mjs >> dist/grim-{{lowercase(name)}}.user.js
+
+# === Development ===
+
+# Watch mode
+dev:
+    deno run -A npm:rescript -w
+
+# Clean build artifacts
+clean:
+    rm -rf dist/ lib/
+    find src -name "*.mjs" -delete
+    @echo "✓ Cleaned"
+
+# === Validation ===
+
+# Format check
+fmt:
+    deno run -A npm:rescript format src/**/*.res
+
+# Type check
+check:
+    deno run -A npm:rescript
+
+# === WASM ===
+
+# Build WASM modules (requires Rust toolchain)
+build-wasm:
+    @echo "Building WASM modules..."
+    @if [ -d "src/wasm/readability" ]; then \
+        cd src/wasm/readability && \
+        cargo build --target wasm32-unknown-unknown --release && \
+        wasm-bindgen target/wasm32-unknown-unknown/release/readability.wasm \
+            --out-dir ../../../dist/wasm --target web; \
+    fi
+    @echo "✓ WASM built"
+
+# === Distribution ===
+
+# Package for release
+package: clean build
+    @mkdir -p release
+    @zip -j release/grimrepo-scripts-v1.0.0.zip dist/*.user.js
+    @echo "✓ Packaged: release/grimrepo-scripts-v1.0.0.zip"
+
+# Install to Tampermonkey (macOS)
+install-tm script="all":
+    @if [ "{{script}}" = "all" ]; then \
+        for f in dist/*.user.js; do \
+            open -a "Tampermonkey" "$$f"; \
+        done; \
+    else \
+        open -a "Tampermonkey" "dist/grim-{{script}}.user.js"; \
+    fi
+
+# === RSR Compliance ===
+
+# Check RSR compliance
+check-rsr: check-state check-aibdp
+    @echo "✓ RSR compliance check passed"
+
+check-state:
+    @if [ -f "STATE.scm" ]; then \
+        guile -c '(primitive-load "STATE.scm")' 2>/dev/null && \
+        echo "  ✓ STATE.scm valid" || echo "  ✗ STATE.scm invalid"; \
+    else \
+        echo "  ⚠ STATE.scm not found"; \
+    fi
+
+check-aibdp:
+    @if [ -f ".well-known/aibdp.json" ]; then \
+        jq -e '.aibdp_version == "0.2"' .well-known/aibdp.json > /dev/null && \
+        echo "  ✓ AIBDP valid" || echo "  ✗ AIBDP invalid"; \
+    else \
+        echo "  ⚠ AIBDP not found"; \
+    fi
+
+# === Scripts Info ===
+
+# List available scripts
+list:
+    @echo "Available scripts:"
+    @echo "  grim-aibdp-checker  - AIBDP manifest detection"
+    @echo "  grim-gitlab-enhanced - RSR GitLab enhancements"
+    @echo "  grim-a11y-overlay   - Accessibility testing"
+    @echo "  grim-dark-mode      - Sinople dark themes"
+    @echo ""
+    @echo "Planned:"
+    @echo "  grim-citation-extractor"
+    @echo "  grim-doi-resolver"
+    @echo "  grim-state-viewer"
+    @echo "  grim-nickel-preview"
+
+# Show script info
+info script:
+    @echo "Script: {{script}}"
+    @head -20 dist/grim-{{script}}.user.js 2>/dev/null || \
+        echo "Not built. Run: just build"

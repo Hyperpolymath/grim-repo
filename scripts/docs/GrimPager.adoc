@@ -1,0 +1,326 @@
+= GrimPager: Perpetual Auto-Paging Engine
+:toc:
+:toc-title: Contents
+:source-highlighter: highlight.js
+
+== Overview
+
+**GrimPager** is a type-safe, high-performance auto-paging UserScript built with ReScript. It replaces thousands of lines of untyped JavaScript with a clean, modular architecture.
+
+=== Key Features
+
+* **Type-Safe**: Full ReScript type checking prevents runtime errors
+* **Homoiconic Data**: Rules compiled directly into efficient code
+* **Smart Detection**: Falls back to pattern detection when no rule matches
+* **WASM-Ready**: Architecture supports WebAssembly optimization
+* **Single Source of Truth**: All metadata in `deno.json`
+
+== Architecture
+
+=== The Power of Three
+
+Only 3 files needed:
+
+[source]
+----
+1. deno.json      # Metaiconic config (SSOT)
+2. src/Build.res  # Self-hosting builder
+3. src/Main.res   # Single script (Logic + Data)
+----
+
+=== Module Structure
+
+[source,rescript]
+----
+// src/Main.res
+
+Module Types      → Schema definitions
+Module Database   → Homoiconic rule set (replaces JSON)
+Module Engine     → Core paging logic
+Module Entry      → Initialization
+----
+
+== Installation
+
+=== Prerequisites
+
+* Deno 2.x
+* ReScript 11+
+* Tampermonkey or compatible userscript manager
+
+=== Quick Start
+
+[source,bash]
+----
+# Clone grimrepo-scripts
+git clone https://github.com/hyperpolymath/grimrepo-scripts
+cd grimrepo-scripts
+
+# Build GrimPager
+deno task build
+
+# Output: dist/GrimPager.user.js
+----
+
+== Rule System
+
+=== Adding New Rules
+
+Rules are type-safe ReScript code, not JSON:
+
+[source,rescript]
+----
+// In src/scripts/pager/GrimPager.res → Module Database
+
+let rules = [
+  // Existing rules...
+
+  // Add new site
+  rule(
+    ~url="example\\.com/search",
+    ~next=".pagination > a.next",
+    ~page="#results",
+    ~preload=true,
+    (),
+  ),
+]
+----
+
+=== Rule Structure
+
+[source,rescript]
+----
+type rule = {
+  url: Js.Re.t,              // Regex pattern for URL matching
+  next: string,              // CSS selector for "next page" link
+  page: string,              // CSS selector for content container
+  action: option<action>,    // Standard | Iframe | Dynamic
+  preload: option<bool>,     // Preload next page in background?
+}
+----
+
+== Smart Detection
+
+When no rule matches, GrimPager attempts automatic detection:
+
+[source,rescript]
+----
+let detectPagination = (): option<(string, string)> => {
+  // Common patterns
+  let nextPatterns = [
+    "a.next", "a.next-page", ".pagination-next",
+    "a[rel='next']", "a:contains('Next')",
+  ]
+
+  let contentPatterns = [
+    "main", "article", ".content",
+    ".posts", ".items", ".results",
+  ]
+
+  // Returns first match
+}
+----
+
+== Performance Optimizations
+
+=== Current Optimizations
+
+1. **Tree Shaking**: Esbuild removes unused code
+2. **Minification**: Production builds are compressed
+3. **Regex Caching**: Patterns compiled once at startup
+4. **Lazy Loading**: Content loaded on-demand
+
+=== Future Optimizations (Recommended)
+
+==== 1. WASM Pattern Matching
+
+**Problem**: JavaScript regex can be slow on large rule sets
+
+**Solution**: Compile rule matching to WASM
+
+[source,rust]
+----
+// In Rust (compile to WASM)
+#[wasm_bindgen]
+pub fn find_matching_rule(url: &str, rules: &[Rule]) -> Option<usize> {
+    rules.iter()
+         .position(|r| r.pattern.is_match(url))
+}
+----
+
+Benefits:
+- 5-10x faster pattern matching
+- Lower memory usage
+- Better for 1000+ rules
+
+==== 2. IndexedDB Rule Caching
+
+**Problem**: Rules re-downloaded on every page load
+
+**Solution**: Cache compiled rules in IndexedDB
+
+[source,rescript]
+----
+module RuleCache = {
+  let store = async (rules) => {
+    // Save to IndexedDB
+    let db = await openDB("GrimPager", 1)
+    await db.put("rules", rules)
+  }
+
+  let load = async () => {
+    let db = await openDB("GrimPager", 1)
+    await db.get("rules")
+  }
+}
+----
+
+==== 3. Web Workers for Non-Blocking Matching
+
+**Problem**: Large rule sets block UI thread
+
+**Solution**: Offload matching to Web Worker
+
+[source,rescript]
+----
+// Main thread
+let worker = new Worker("rule-matcher.js")
+worker.postMessage({url: currentUrl})
+
+worker.onMessage = (event) => {
+  let matchedRule = event.data
+  // Apply rule
+}
+----
+
+==== 4. Intersection Observer
+
+**Problem**: `scroll` event fires too frequently
+
+**Solution**: Use Intersection Observer API
+
+[source,rescript]
+----
+let observer = IntersectionObserver.make(
+  ~callback=(entries) => {
+    entries->Array.forEach(entry => {
+      if entry.isIntersecting {
+        loadNextPage()
+      }
+    })
+  },
+  ~options={threshold: 0.9}
+)
+
+observer.observe(lastElement)
+----
+
+Benefits:
+- Better performance than scroll listener
+- Fires only when element visible
+- Battery-friendly
+
+== Publishing
+
+=== Manual Publishing
+
+[source,bash]
+----
+# 1. Bump version in deno.json
+# 2. Build
+deno task build
+
+# 3. Upload dist/GrimPager.user.js to GreasyFork
+----
+
+=== Auto-Publishing (GreasyFork API)
+
+Configure in `deno.json`:
+
+[source,json]
+----
+{
+  "greasyfork": {
+    "scriptId": "123456",
+    "apiKey": "${GREASYFORK_API_KEY}",
+    "autoPublish": true
+  }
+}
+----
+
+Then:
+
+[source,bash]
+----
+# Set environment variable
+export GREASYFORK_API_KEY="your-api-key-here"
+
+# Build and auto-publish
+deno task build:prod
+----
+
+The build script will:
+1. Compile ReScript → JavaScript
+2. Bundle with esbuild
+3. Generate UserScript header
+4. Upload to GreasyFork API
+5. Print published URL
+
+== Troubleshooting
+
+=== Page Not Loading
+
+**Symptoms**: Scroll works but content doesn't append
+
+**Fixes**:
+1. Check console for errors
+2. Verify `page` selector matches container
+3. Try different `action` type (Standard/Iframe/Dynamic)
+
+=== Rule Not Matching
+
+**Symptoms**: GrimPager doesn't activate on expected site
+
+**Debug**:
+[source,javascript]
+----
+// In browser console
+console.log(window.location.href)
+// Compare with your regex pattern
+----
+
+=== Memory Leaks
+
+**Symptoms**: Browser slows down after many pages
+
+**Fix**: Limit maximum pages:
+[source,rescript]
+----
+if state.pageNum > 50 {
+  Js.Console.warn("Max pages reached")
+  // Stop loading
+}
+----
+
+== Contributing
+
+Add new rules by submitting PRs to:
+https://github.com/hyperpolymath/grimrepo-scripts
+
+Update `src/scripts/pager/GrimPager.res` → `Module Database.rules`
+
+== License
+
+PMPL-1.0-or-later
+
+See: https://github.com/hyperpolymath/palimpsest-license
+
+== Related Projects
+
+* https://github.com/hyperpolymath/grim-repo[grim-repo] - Repository quality toolkit
+* https://github.com/hyperpolymath/grimrepo-scripts[grimrepo-scripts] - Browser userscript collection
+
+== See Also
+
+* link:GrimGreaser.adoc[GrimGreaser Build System]
+* link:../README.adoc[grimrepo-scripts README]

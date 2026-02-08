@@ -1,0 +1,632 @@
+= GrimTemplateEngine: Intelligent Repository Health Agent
+:toc:
+:toc-title: Contents
+:source-highlighter: highlight.js
+
+== Overview
+
+**GrimTemplateEngine** transforms repository management from manual checklists to intelligent automation. It's a context-aware scaffolding engine that detects missing community health files and generates customized templates with one click.
+
+=== Key Features
+
+* ✅ **Context-Aware**: Extracts owner, repo name, platform from URL
+* 🎯 **Smart Templates**: Generates customized content, not generic boilerplate
+* 📊 **Health Scoring**: Rates repositories 0-100 based on standards compliance
+* 💾 **Persistence**: Remembers dismissed repos (LocalStorage)
+* 🎨 **Non-Intrusive UI**: Floating panel, auto-dismisses for perfect repos
+* 🚀 **One-Click Creation**: Pre-fills GitHub/GitLab editors with generated content
+* 🏷️ **Priority System**: Critical, Important, Recommended categories
+
+== Architecture
+
+=== Module Breakdown
+
+[source]
+----
+Platform        → Detects GitHub/GitLab/Bitbucket/Codeberg/SourceHut
+Context         → Extracts owner/repo/branch from URL
+Templates       → Generates customized Markdown files
+Standards       → Database of community health files
+URLGenerator    → Constructs platform-specific "Create File" URLs
+Storage         → LocalStorage persistence for dismissed repos
+UI              → Floating panel with categorized actions
+----
+
+=== Data Flow
+
+[source]
+----
+1. User visits repo page
+   ↓
+2. Context.scan() extracts owner/repo/platform
+   ↓
+3. Standards.all checked against existing files
+   ↓
+4. Missing files identified
+   ↓
+5. Health score calculated (0-100)
+   ↓
+6. UI.createPanel() renders floating HUD
+   ↓
+7. User clicks "Create"
+   ↓
+8. Template generated with context
+   ↓
+9. URL opens with pre-filled editor
+   ↓
+10. User commits → Done!
+----
+
+== Standards Database
+
+=== Critical Files (30 points each)
+
+[cols="1,3,1"]
+|===
+|File |Purpose |Impact
+
+|`LICENSE`
+|Legal usage rights
+|Without this, code is proprietary by default
+
+|`SECURITY.md`
+|Vulnerability reporting
+|Security researchers need contact info
+
+|`CODE_OF_CONDUCT.md`
+|Community standards
+|Sets expectations for behavior
+|===
+
+=== Important Files (15 points each)
+
+[cols="1,3"]
+|===
+|File |Purpose
+
+|`CONTRIBUTING.md`
+|Contribution guidelines
+
+|`CHANGELOG.md`
+|Version history
+
+|`AUTHORS.md`
+|Project contributors
+|===
+
+=== Recommended Files (5 points each)
+
+[cols="1,3"]
+|===
+|File |Purpose
+
+|`CITATION.cff`
+|Academic citation format
+
+|`SUPPORT.md`
+|Getting help
+
+|`FUNDING.yml`
+|Sponsorship info
+|===
+
+== Template System
+
+=== Context Injection
+
+All templates receive `repoInfo`:
+
+[source,rescript]
+----
+type repoInfo = {
+  owner: string,        // e.g., "hyperpolymath"
+  name: string,         // e.g., "grim-repo"
+  branch: string,       // e.g., "main"
+  platform: Platform.t, // GitHub | GitLab | ...
+  url: string,          // Full repo URL
+}
+----
+
+=== Example: Security Policy
+
+[source,markdown]
+----
+# Security Policy
+
+## Reporting a Vulnerability
+
+Email: security@hyperpolymath.dev
+
+For more information, see https://github.com/hyperpolymath/grim-repo/security
+----
+
+Notice how:
+- `hyperpolymath` comes from `info.owner`
+- `grim-repo` comes from `info.name`
+- URL is auto-generated
+
+=== Adding Custom Templates
+
+[source,rescript]
+----
+// In Templates module
+let myNewTemplate = (info: repoInfo): string => {
+  `# ${info.name} Custom Doc
+
+Owner: ${info.owner}
+Platform: ${Platform.name(info.platform)}
+
+...your content...
+`
+}
+
+// In Standards module
+let all: array<standard> = [
+  // ... existing standards
+  {
+    filename: "CUSTOM.md",
+    description: "My custom file",
+    priority: Recommended,
+    generator: Templates.myNewTemplate,
+    category: "Custom",
+  },
+]
+----
+
+== Health Scoring System
+
+=== Calculation
+
+[source]
+----
+Base Score: 100 points
+
+Deductions:
+- Missing Critical file:     -30 points
+- Missing Important file:    -15 points
+- Missing Recommended file:   -5 points
+
+Final Score = max(0, 100 - total_deductions)
+----
+
+=== Score Interpretation
+
+[cols="1,1,2"]
+|===
+|Score |Rating |Meaning
+
+|80-100
+|🟢 Excellent
+|Golden Repository - All critical standards met
+
+|50-79
+|🟡 Good
+|Most standards met, some improvements needed
+
+|0-49
+|🔴 Needs Work
+|Missing critical files, immediate action required
+|===
+
+== Platform Support
+
+=== Supported Platforms
+
+[cols="1,1,3"]
+|===
+|Platform |Status |Notes
+
+|GitHub
+|✅ Full
+|File detection, URL generation, branch detection
+
+|GitLab
+|✅ Full
+|All features supported
+
+|Bitbucket
+|⚠️ Partial
+|File detection works, limited branch detection
+
+|Codeberg
+|⚠️ Partial
+|GitHub-compatible, limited testing
+
+|SourceHut
+|⚠️ Minimal
+|Basic detection only
+|===
+
+=== Platform-Specific Selectors
+
+[source,rescript]
+----
+let hasFile = (filename: string, info: repoInfo): bool => {
+  let selector = switch info.platform {
+  | GitHub => `a[title="${filename}"]`
+  | GitLab => `.tree-item-file-name a[title="${filename}"]`
+  | Bitbucket => `a[href*="${filename}"]`
+  | _ => `a[href*="${filename}"]`
+  }
+  // ...
+}
+----
+
+== Persistence & State
+
+=== LocalStorage Schema
+
+[source,json]
+----
+{
+  "grimtemplate_dismissed": [
+    "https://github.com/owner/repo1",
+    "https://github.com/owner/repo2"
+  ]
+}
+----
+
+=== Dismissing Repos
+
+When user clicks "×", the repo URL is stored in LocalStorage.
+
+**Behavior:**
+- Panel won't show again for that repo
+- Clear storage to reset: `localStorage.removeItem('grimtemplate_dismissed')`
+- Auto-dismiss for Golden Repos after 5 seconds
+
+== User Interface
+
+=== Panel Design
+
+**Visual Hierarchy:**
+1. Header with repo name + health score
+2. Close button (top-right ×)
+3. Categorized file list (Critical → Important → Recommended)
+4. Footer with attribution link
+
+**Color Coding:**
+- 🔴 Critical: Red (#f44336)
+- 🟠 Important: Orange (#ff9800)
+- 🔵 Recommended: Blue (#2196f3)
+- 🟢 Success: Green (#4caf50)
+
+=== Accessibility
+
+- High contrast colors
+- System font stack
+- Clear labels
+- Keyboard navigable (links are tabbable)
+
+== Advanced Usage
+
+=== Batch File Creation
+
+Currently: Click each "Create" button individually
+
+**Future Enhancement**: Multi-select + batch create
+
+[source,rescript]
+----
+// Proposed API
+module Batch = {
+  let createAll = async (files: array<standard>, info: repoInfo) => {
+    for file in files {
+      let content = file.generator(info)
+      await GitHubAPI.createFile(file.filename, content, info)
+    }
+  }
+}
+----
+
+=== Integration with grim-repo
+
+**grim-repo** (audit toolkit) + **GrimTemplateEngine** (fixer) = Complete solution
+
+**Workflow:**
+1. grim-repo audits all repos (CLI)
+2. Generates report of issues
+3. GrimTemplateEngine fixes issues (Browser)
+
+**Proposed Integration:**
+[source,rescript]
+----
+// In grim-repo CLI
+$ grim-audit ~/repos/my-project
+❌ Missing SECURITY.md
+❌ Missing CODE_OF_CONDUCT.md
+
+$ grim-fix ~/repos/my-project
+✓ Generated SECURITY.md
+✓ Generated CODE_OF_CONDUCT.md
+----
+
+=== Tech Stack Detection
+
+**Future Enhancement**: Detect language/framework and suggest workflows
+
+[source,rescript]
+----
+module TechStack = {
+  type stack = Rust | ReScript | Julia | Elixir | Unknown
+
+  let detect = (info: repoInfo): stack => {
+    // Check for Cargo.toml, rescript.json, Project.toml, etc.
+  }
+
+  let suggestWorkflows = (stack: stack): array<string> => {
+    switch stack {
+    | Rust => ["rust-ci.yml", "cargo-audit.yml"]
+    | ReScript => ["rescript-build.yml"]
+    | Julia => ["julia-test.yml"]
+    | _ => []
+    }
+  }
+}
+----
+
+== Optimization Opportunities
+
+=== 1. GitHub API Integration
+
+**Current**: Opens GitHub UI for manual commit
+
+**Optimized**: Direct API calls (requires token)
+
+[source,rescript]
+----
+module GitHubAPI = {
+  type createFileRequest = {
+    message: string,
+    content: string,  // base64 encoded
+    branch: string,
+  }
+
+  @val external fetch: (string, {..}) => promise<{..}> = "fetch"
+
+  let createFile = async (
+    ~owner: string,
+    ~repo: string,
+    ~path: string,
+    ~content: string,
+    ~token: string,
+  ) => {
+    let url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`
+    let encoded = %raw(`btoa(content)`)
+
+    await fetch(url, {
+      "method": "PUT",
+      "headers": {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      "body": %raw(`JSON.stringify({
+        message: "Add ${path} via GrimTemplate",
+        content: encoded,
+      })`),
+    })
+  }
+}
+----
+
+**Benefits:**
+- No tab switching
+- Batch creation possible
+- Programmable workflows
+
+**Trade-off:** Requires user to grant token
+
+=== 2. AI-Powered Content
+
+**Current**: Static templates
+
+**Enhanced**: AI analyzes existing repo content
+
+[source,rescript]
+----
+module AI = {
+  let enhanceTemplate = async (
+    ~template: string,
+    ~repoContext: string,
+  ): string => {
+    // Call OpenAI/Anthropic API
+    // "Analyze this repo and enhance CONTRIBUTING.md"
+  }
+}
+----
+
+**Use Cases:**
+- Custom contributing guidelines based on tech stack
+- Security policy based on dependencies
+- Code of conduct enforcement based on platform
+
+=== 3. Real-Time Collaboration
+
+**Feature**: Show what other contributors are working on
+
+[source,rescript]
+----
+module Activity = {
+  type event = FileCreated(string) | IssueOpened(int)
+
+  let watchRepo = (info: repoInfo, callback) => {
+    // WebSocket or SSE to GitHub Events API
+  }
+}
+
+// In UI
+"👀 Alice just added SECURITY.md to this repo"
+----
+
+=== 4. Linting & Validation
+
+**Feature**: Validate generated content before committing
+
+[source,rescript]
+----
+module Validator = {
+  let validateMarkdown = (content: string): result<unit, string> => {
+    // Check for broken links
+    // Validate markdown syntax
+    // Check for placeholder text
+  }
+}
+----
+
+=== 5. Template Marketplace
+
+**Vision**: Community-contributed templates
+
+[source]
+----
+templates/
+├── official/
+│   └── security-policy-v2.md
+├── community/
+│   ├── security-policy-bug-bounty.md
+│   └── contributing-with-discord.md
+└── industry/
+    ├── fintech-compliance.md
+    └── healthcare-hipaa.md
+----
+
+== Troubleshooting
+
+=== Panel Not Appearing
+
+**Symptoms**: Visit repo, no panel shows
+
+**Checks:**
+1. Open console: Is script loaded?
+2. Check URL: Is it a repo page? (not settings/issues)
+3. Check storage: `localStorage.getItem('grimtemplate_dismissed')`
+4. Check context: Run `Context.scan()` manually
+
+=== Wrong Repo Detected
+
+**Symptoms**: Panel shows wrong owner/name
+
+**Fix**: Improve URL parsing
+
+[source,rescript]
+----
+// Debug
+Js.Console.log(Context.scan())
+
+// Expected: Some({owner: "hyperpolymath", name: "grim-repo"})
+// Actual: Some({owner: "wrong", name: "repo"})
+----
+
+=== Templates Not Pre-Filling
+
+**Symptoms**: Click "Create", editor is empty
+
+**Causes:**
+- URL encoding issue
+- Platform doesn't support `?value=...` parameter
+- Content too large (URL length limit)
+
+**Fix**: Use POST for large content
+
+=== Performance Issues
+
+**Symptoms**: Page lag on large repos
+
+**Optimizations:**
+1. Debounce file checks
+2. Use Intersection Observer for lazy loading
+3. Cache detection results
+
+== Publishing & Distribution
+
+=== Via GreasyFork
+
+[source,json]
+----
+{
+  "name": "GrimTemplateEngine",
+  "version": "1.0.0",
+  "greasyfork": {
+    "scriptId": "YOUR_ID",
+    "autoPublish": true
+  }
+}
+----
+
+[source,bash]
+----
+deno task build
+# Uploads to GreasyFork automatically
+----
+
+=== As Browser Extension
+
+Convert to Chrome/Firefox extension:
+
+[source]
+----
+manifest.json:
+{
+  "name": "GrimTemplate",
+  "version": "1.0.0",
+  "content_scripts": [{
+    "matches": [
+      "*://github.com/*/*",
+      "*://gitlab.com/*/*"
+    ],
+    "js": ["grimtemplate.js"]
+  }]
+}
+----
+
+== Roadmap
+
+=== v1.1 (Next)
+
+- [ ] Batch file creation
+- [ ] GitHub API integration (requires token)
+- [ ] More platforms (Gitea, Gogs)
+
+=== v1.2 (Future)
+
+- [ ] AI-enhanced templates
+- [ ] Tech stack detection
+- [ ] Workflow suggestions
+
+=== v2.0 (Vision)
+
+- [ ] Template marketplace
+- [ ] Real-time collaboration
+- [ ] grim-repo integration
+
+== Contributing
+
+Add new templates in `Templates` module:
+
+[source,rescript]
+----
+let myTemplate = (info: repoInfo): string => {
+  `# Custom Content
+
+  For ${info.name} by ${info.owner}
+  `
+}
+----
+
+Then register in `Standards.all`.
+
+== License
+
+PMPL-1.0-or-later
+
+See: https://github.com/hyperpolymath/palimpsest-license
+
+== Links
+
+* https://github.com/hyperpolymath/grimrepo-scripts[GrimRepo-Scripts]
+* https://github.com/hyperpolymath/grim-repo[Grim-Repo Audit Toolkit]
+* https://greasyfork.org[GreasyFork]
+
+---
+
+*Built to help you get repositories under control* 🎯
